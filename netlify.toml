@@ -9,3 +9,5 @@
 
 [build.environment]
   NODE_VERSION = "20"
+  # Add your Vercel URL here
+  VITE_API_URL = "https://your-project.vercel.app"
