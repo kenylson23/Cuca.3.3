@@ -7,6 +7,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
 import { useMutation } from "@tanstack/react-query";
 import { Eye, EyeOff, Lock, User, Mail, UserPlus } from "lucide-react";
+import { apiRequest } from "@/lib/queryClient";
 
 export default function LoginPage() {
   // Login form state
@@ -30,19 +31,7 @@ export default function LoginPage() {
 
   const loginMutation = useMutation({
     mutationFn: async (credentials: { username: string; password: string }) => {
-      const response = await fetch("/api/auth/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(credentials),
-      });
-      
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.message || "Erro no login");
-      }
-      
+      const response = await apiRequest("/api/auth/login", "POST", credentials);
       return response.json();
     },
     onSuccess: (data) => {
@@ -72,19 +61,7 @@ export default function LoginPage() {
 
   const registerMutation = useMutation({
     mutationFn: async (userData: typeof registerData) => {
-      const response = await fetch("/api/auth/register", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(userData),
-      });
-      
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.message || "Erro no cadastro");
-      }
-      
+      const response = await apiRequest("/api/auth/register", "POST", userData);
       return response.json();
     },
     onSuccess: (data) => {

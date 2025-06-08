@@ -11,11 +11,23 @@ async function initializeApp(): Promise<express.Application> {
   expressApp.use(express.json({ limit: '10mb' }));
   expressApp.use(express.urlencoded({ extended: false, limit: '10mb' }));
   
-  // Add CORS headers
+  // Add CORS headers for Netlify frontend
   expressApp.use((req: Request, res: Response, next: NextFunction) => {
-    res.header('Access-Control-Allow-Origin', '*');
+    const origin = req.headers.origin;
+    const allowedOrigins = [
+      'https://cucatest.netlify.app',
+      'https://cuca.netlify.app',
+      'http://localhost:5173',
+      'http://localhost:5000'
+    ];
+    
+    if (allowedOrigins.includes(origin as string)) {
+      res.header('Access-Control-Allow-Origin', origin);
+    }
+    
     res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS');
-    res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+    res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, Cookie');
+    res.header('Access-Control-Allow-Credentials', 'true');
     
     if (req.method === 'OPTIONS') {
       res.sendStatus(200);

@@ -28,8 +28,10 @@ export function getSimpleSession() {
     saveUninitialized: false,
     cookie: {
       httpOnly: true,
-      secure: false, // Set to true in production with HTTPS
+      secure: process.env.NODE_ENV === 'production' || process.env.VERCEL === '1',
+      sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
       maxAge: sessionTtl,
+      domain: process.env.NODE_ENV === 'production' ? undefined : undefined,
     },
   });
 }

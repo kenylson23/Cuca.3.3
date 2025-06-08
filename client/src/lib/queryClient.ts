@@ -2,7 +2,7 @@ import { QueryClient, QueryFunction } from "@tanstack/react-query";
 
 // Configuration for API base URL
 const API_BASE_URL = import.meta.env.VITE_API_URL || 
-  (import.meta.env.DEV ? '' : 'https://your-project.vercel.app');
+  (import.meta.env.DEV ? '' : 'https://cuca-backend-vercel.vercel.app');
 
 function getApiUrl(url: string): string {
   // If URL already includes protocol, use as-is
