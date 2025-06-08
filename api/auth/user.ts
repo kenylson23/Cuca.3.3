@@ -1,8 +1,7 @@
 import { VercelRequest, VercelResponse } from '@vercel/node';
 
-// Simple test endpoint for Vercel
 export default function handler(req: VercelRequest, res: VercelResponse) {
-  // Add CORS headers
+  // CORS headers
   const origin = req.headers.origin;
   const allowedOrigins = [
     'https://cucatest.netlify.app',
@@ -15,7 +14,7 @@ export default function handler(req: VercelRequest, res: VercelResponse) {
     res.setHeader('Access-Control-Allow-Origin', origin as string);
   }
   
-  res.setHeader('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, Cookie');
   res.setHeader('Access-Control-Allow-Credentials', 'true');
   
@@ -23,10 +22,11 @@ export default function handler(req: VercelRequest, res: VercelResponse) {
     return res.status(200).end();
   }
   
-  res.status(200).json({ 
-    message: 'CUCA API funcionando!',
-    method: req.method,
-    url: req.url,
-    timestamp: new Date().toISOString()
-  });
+  if (req.method !== 'GET') {
+    return res.status(405).json({ message: 'Method not allowed' });
+  }
+  
+  // For serverless, we can't maintain sessions easily
+  // Return unauthorized for now - real implementation would need JWT or similar
+  res.status(401).json({ message: 'Unauthorized' });
 }
