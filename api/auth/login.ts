@@ -1,14 +1,14 @@
 import { VercelRequest, VercelResponse } from '@vercel/node';
-import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
 
-// Admin credentials
 const ADMIN_CREDENTIALS = {
   username: "admin",
   password: "cuca2024"
 };
 
-export default async function handler(req: VercelRequest, res: VercelResponse) {
-  // CORS headers
+const JWT_SECRET = process.env.SESSION_SECRET || "cuca-admin-secret-key-2024";
+
+export default function handler(req: VercelRequest, res: VercelResponse) {
   const origin = req.headers.origin;
   const allowedOrigins = [
     'https://cucatest.netlify.app',
@@ -18,11 +18,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   ];
   
   if (origin && allowedOrigins.includes(origin)) {
-    res.setHeader('Access-Control-Allow-Origin', origin as string);
+    res.setHeader('Access-Control-Allow-Origin', origin);
   }
   
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, Cookie');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
   res.setHeader('Access-Control-Allow-Credentials', 'true');
   
   if (req.method === 'OPTIONS') {
@@ -36,10 +36,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   try {
     const { username, password } = req.body;
     
-    // Check admin credentials
     if (username === ADMIN_CREDENTIALS.username && password === ADMIN_CREDENTIALS.password) {
-      // Set session cookie
-      const sessionData = {
+      const user = {
         id: "admin-1",
         username: "admin",
         email: "admin@cuca.ao",
@@ -48,12 +46,14 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         role: "admin"
       };
       
-      // For now, just return success without session storage
-      // Session management would need Redis or similar for serverless
+      const token = jwt.sign(user, JWT_SECRET, { expiresIn: '7d' });
+      
+      res.setHeader('Set-Cookie', `token=${token}; HttpOnly; Secure; SameSite=None; Max-Age=${7 * 24 * 60 * 60}; Path=/`);
+      
       res.status(200).json({
         success: true,
         message: "Login realizado com sucesso",
-        user: sessionData
+        user: user
       });
     } else {
       res.status(401).json({

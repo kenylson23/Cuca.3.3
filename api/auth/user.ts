@@ -1,7 +1,9 @@
 import { VercelRequest, VercelResponse } from '@vercel/node';
+import jwt from 'jsonwebtoken';
+
+const JWT_SECRET = process.env.SESSION_SECRET || "cuca-admin-secret-key-2024";
 
 export default function handler(req: VercelRequest, res: VercelResponse) {
-  // CORS headers
   const origin = req.headers.origin;
   const allowedOrigins = [
     'https://cucatest.netlify.app',
@@ -11,7 +13,7 @@ export default function handler(req: VercelRequest, res: VercelResponse) {
   ];
   
   if (origin && allowedOrigins.includes(origin)) {
-    res.setHeader('Access-Control-Allow-Origin', origin as string);
+    res.setHeader('Access-Control-Allow-Origin', origin);
   }
   
   res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
@@ -26,7 +28,17 @@ export default function handler(req: VercelRequest, res: VercelResponse) {
     return res.status(405).json({ message: 'Method not allowed' });
   }
   
-  // For serverless, we can't maintain sessions easily
-  // Return unauthorized for now - real implementation would need JWT or similar
-  res.status(401).json({ message: 'Unauthorized' });
+  try {
+    const cookies = req.headers.cookie;
+    const token = cookies?.split(';').find(c => c.trim().startsWith('token='))?.split('=')[1];
+    
+    if (!token) {
+      return res.status(401).json({ message: 'Unauthorized' });
+    }
+    
+    const decoded = jwt.verify(token, JWT_SECRET) as any;
+    res.status(200).json(decoded);
+  } catch (error) {
+    res.status(401).json({ message: 'Unauthorized' });
+  }
 }
