@@ -1,9 +1,9 @@
 import { QueryClient, QueryFunction } from "@tanstack/react-query";
 
 // Configuration for API base URL
-// You need to set VITE_API_URL environment variable in Netlify to your actual Vercel backend URL
+// In production, use Vercel API endpoints
 const API_BASE_URL = import.meta.env.VITE_API_URL || 
-  (import.meta.env.DEV ? '' : 'https://your-vercel-backend.vercel.app');
+  (import.meta.env.DEV ? '' : 'https://cuca-beer.vercel.app');
 
 function getApiUrl(url: string): string {
   // If URL already includes protocol, use as-is
