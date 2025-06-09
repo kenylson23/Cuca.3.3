@@ -1,6 +1,6 @@
 [build]
   publish = "client/dist"
-  command = "npm install && npx vite build --config vite.config.production.ts"
+  command = "npm ci && npm run build:client"
 
 [build.environment]
   NODE_VERSION = "20"
@@ -10,6 +10,13 @@
   from = "/*"
   to = "/index.html"
   status = 200
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "DENY"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
 
 [[headers]]
   for = "/*.js"
