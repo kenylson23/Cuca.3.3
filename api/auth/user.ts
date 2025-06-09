@@ -1,9 +1,14 @@
 import { VercelRequest, VercelResponse } from '@vercel/node';
-import jwt from 'jsonwebtoken';
+import { Pool } from '@neondatabase/serverless';
+import { drizzle } from 'drizzle-orm/neon-serverless';
+import * as schema from '../../shared/schema';
 
-const JWT_SECRET = process.env.SESSION_SECRET || "cuca-admin-secret-key-2024";
+// Initialize database connection
+const pool = new Pool({ connectionString: process.env.DATABASE_URL });
+const db = drizzle({ client: pool, schema });
 
 export default function handler(req: VercelRequest, res: VercelResponse) {
+  // Add CORS headers
   const origin = req.headers.origin;
   const allowedOrigins = [
     'https://cucatest.netlify.app',
@@ -13,32 +18,21 @@ export default function handler(req: VercelRequest, res: VercelResponse) {
   ];
   
   if (origin && allowedOrigins.includes(origin)) {
-    res.setHeader('Access-Control-Allow-Origin', origin);
+    res.setHeader('Access-Control-Allow-Origin', origin as string);
   }
   
-  res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
+  res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, Cookie');
   res.setHeader('Access-Control-Allow-Credentials', 'true');
   
   if (req.method === 'OPTIONS') {
     return res.status(200).end();
   }
-  
+
   if (req.method !== 'GET') {
-    return res.status(405).json({ message: 'Method not allowed' });
+    return res.status(405).json({ message: 'Método não permitido' });
   }
-  
-  try {
-    const cookies = req.headers.cookie;
-    const token = cookies?.split(';').find(c => c.trim().startsWith('token='))?.split('=')[1];
-    
-    if (!token) {
-      return res.status(401).json({ message: 'Unauthorized' });
-    }
-    
-    const decoded = jwt.verify(token, JWT_SECRET) as any;
-    res.status(200).json(decoded);
-  } catch (error) {
-    res.status(401).json({ message: 'Unauthorized' });
-  }
+
+  // For now, return unauthorized since we don't have session management in Vercel
+  return res.status(401).json({ message: 'Unauthorized' });
 }
