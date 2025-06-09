@@ -14,6 +14,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   const allowedOrigins = [
     'https://cucatest.netlify.app',
     'https://cuca.netlify.app',
+    'https://incomparable-tartufo-db7f34.netlify.app',
     'http://localhost:5173',
     'http://localhost:5000'
   ];

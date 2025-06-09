@@ -3,6 +3,11 @@
 /**
  * Script para configurar automaticamente a comunicação entre Netlify e Vercel
  * Execute: node scripts/setup-production.js <URL_DO_VERCEL> <URL_DO_NETLIFY>
+ * 
+ * Este script:
+ * 1. Configura CORS nos endpoints da API do Vercel
+ * 2. Atualiza a URL da API no frontend
+ * 3. Configura variáveis de ambiente
  */
 
 const fs = require('fs');
