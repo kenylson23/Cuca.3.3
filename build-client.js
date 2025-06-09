@@ -14,8 +14,8 @@ try {
   // Set production environment
   process.env.NODE_ENV = 'production';
   
-  // Execute vite build with optimizations
-  execSync('vite build --mode production', { 
+  // Execute vite build with production config
+  execSync('vite build --config vite.config.production.ts', { 
     stdio: 'inherit',
     env: { ...process.env, NODE_ENV: 'production' }
   });
